@@ -52,3 +52,59 @@ Europe <- gapminder %>%
   select(year, population = pop, country)
 table(Europe$country)
 
+# working with group_by() & summarize()
+str(gapminder %>% group_by(continent))
+
+# summarize mean gdp per continent
+gdp_continent <- gapminder %>%
+  group_by(continent) %>%
+  summarize(mean_gdp = mean(gdpPercap),
+            mean_lifeExp = mean(lifeExp))
+View(gdp_continent)
+
+library(ggplot2)
+summary_plot <- gdp_continent %>%
+  ggplot(aes(x = mean_gdp, y = mean_lifeExp)) +
+  geom_point(stat = "Identity") + 
+  theme_bw()
+summary_plot
+
+# calculate mean population for all the continents
+pop_continent <- gapminder %>%
+  group_by(continent) %>% 
+  summarize(mean_pop  = mean(pop))
+mean_pop
+View(pop_continent)
+
+# count() and n()
+gapminder %>% 
+  filter(year == 2002) %>%
+  count(continent, sort = TRUE)
+
+gapminder %>% 
+  group_by(continent) %>%
+  summarize(se = sd(lifeExp)/sqrt(n()))
+
+# mutate() is my friend 
+xy <- data.frame(x = rnorm(100),
+                 y = rnorm(100))
+head(xy)
+xyz <- xy %>%
+  mutate(z = x*y)
+head(xyz)
+
+# add a column for total gdp per country
+total_gdp_country <- gapminder %>%
+  mutate(total_gdp = pop*gdpPercap)
+head(total_gdp_country)
+
+# add a column that gives full gdp per continent
+gdp_per_continent <- gapminder %>%
+  mutate(total_gdp = pop*gdpPercap) %>%
+  group_by(continent) %>%
+  summarise(cont_gdp = sum(total_gdp))
+gdp_per_continent
+
+
+
+
